@@ -10,15 +10,14 @@ The nine rows are `{deepsolo, ticls, ppocr} x {totaltext, icdar2015, ctw1500}`.
 
 | Paper | Section of `tables.md` | What runs | Code |
 |---|---|---|---|
-| Tab. 6 first step: F1, differences with 95% intervals | Table 4 | main chain, stages `op`, `band`, `test` | `reruns/exact/main_chain.py`, `selection/operating_point.py`, `second_stage/band_classifier.py`, `reruns/fast/report_main.py` |
-| Tab. 7 precision, recall, output words | Table 5 | same run | same |
-| Tab. 8 second step (k, crops per image, F1, gains) | Table 6 | same run, stage `band` selects k | `selection/verification_band.py`, `selection/nested_selection.py` |
+| Tab. 6 candidate scoring: P, R, F1, output words, differences with 95% intervals | Table 4, Table 5 | main chain, stages `op`, `band`, `test` | `reruns/exact/main_chain.py`, `selection/operating_point.py`, `second_stage/band_classifier.py`, `reruns/fast/report_main.py` |
+| Tab. 7 second step (k, crops per image, F1, gains) | Table 6 | same run, stage `band` selects k | `selection/verification_band.py`, `selection/nested_selection.py` |
 | Fig. 6 band-width sensitivity; arg max of the training F1 (Sect. 4.6) | Table 15, Table 14 | same run, stages `sweep` and `targmax` | `reruns/exact/main_chain.py`, `figures/make_fig56.py` |
-| Tab. 5 detection-only P/R/F, F std over eleven 80% subsets | Table 3 | stability, 12 training sets per row | `reruns/exact/stability.py`, `evaluation/detection_only.py`, `reruns/fast/report_stability.py` |
+| Tab. 5 detection-only P/R/F1, F1 std over eleven 80% subsets | Table 3 | stability, 12 training sets per row | `reruns/exact/stability.py`, `evaluation/detection_only.py`, `reruns/fast/report_stability.py` |
 | Fig. 5 learning curve | Table 8 of rev 48 / Fig. 5 | learning curve, 11 draws per row | `studies/learning_curve.py`, `figures/make_fig56.py` |
-| Tab. 9 cross-dataset (own, leave-one-out, pooled) | Table 8 / 10 | cross-dataset chain | `studies/cross_dataset.py`, `reruns/exact/cross_dataset.py`, `scripts/cross_chain.sh` |
-| Tab. 10, variant signals (digit share, longest token) | not in `tables.md` | leave-one-out refits with replaced columns | `studies/loo_robust/` |
-| Tab. 10, first-step feature ablation | Table 9 (user numbering) | ablations, stage `all` | `studies/ablations.py` |
+| Tab. 8 cross-dataset (own, leave-one-out, pooled) | Table 8 / 10 | cross-dataset chain | `studies/cross_dataset.py`, `reruns/exact/cross_dataset.py`, `scripts/cross_chain.sh` |
+| Tab. 9, variant candidate features (digit share, longest token) | not in `tables.md` | leave-one-out refits with replaced columns | `studies/loo_robust/` |
+| Tab. 10, candidate-feature ablation | Table 9 (user numbering) | ablations, stage `all` | `studies/ablations.py` |
 | Tab. 11 second readers (PARSeq-S\*, ABINet, ViTSTR-S, shuffled) | Table 10 (user numbering) | readers chain | `reruns/exact/readers_chain.py`, `second_stage/read_*.py`, `reruns/fast/report_readers.py` |
 | Reader accuracy on matched training candidates (Sect. 4.2 and 4.6) | Table 17 | reader accuracy | `second_stage/reader_accuracy.py` |
 | Released and re-tuned baselines (Sect. 4.1.3) | rows "thr_train" | two-threshold grid on the training pool | `data/tasks.py` (`pick_thresholds`), `second_stage/baselines.py` |
@@ -34,7 +33,7 @@ export WORDFILTER_RUNS=... WORDFILTER_ARTIFACTS=... WORDFILTER_DATASETS=... WORD
 python -m wordfilter.setup_configs
 RUN=$WORDFILTER_RUNS/rerun-exact
 
-# S = all chain: first step, band selection, second step, band sweep, baselines (Tab. 6-8, Fig. 6)
+# S = all chain: candidate scoring, band selection, final decision, band sweep, baselines (Tab. 6-7, Fig. 6)
 python -m wordfilter.reruns.exact.main_chain --arm exact --out $RUN --jobs 4 --threads 2
 python -m wordfilter.reruns.exact.readers_chain --arm exact --out $RUN --jobs 4        # Tab. 11
 
@@ -43,7 +42,7 @@ scripts/run_job.sh exact stab_ticls_icdar2015 wordfilter.reruns.exact.stability 
 scripts/run_job.sh exact lc_ticls_icdar2015_s0 wordfilter.studies.learning_curve --expert ticls --task icdar2015 --seed 0 --out $RUN/exact/lc/out
 scripts/run_job.sh exact abl_ticls_icdar2015 wordfilter.studies.ablations --expert ticls --task icdar2015 --stage all --out $RUN/exact/ablations
 scripts/run_job.sh exact ablarg_ticls_icdar2015 wordfilter.studies.ablations --expert ticls --task icdar2015 --stage table10_argmax --out $RUN/exact/ablations
-scripts/cross_chain.sh exact ticls                                                        # Tab. 9 for one spotter
+scripts/cross_chain.sh exact ticls                                                        # Tab. 8 for one spotter
 
 # job lists for all nine rows: python -m wordfilter.reruns.exact.make_jobs {stab|lc|abl|abl_argmax} --out $RUN --arms exact > jobs.txt
 #                              scripts/run_jobs.sh jobs.txt 4

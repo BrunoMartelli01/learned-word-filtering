@@ -6,18 +6,18 @@ full training pools, CTW1500 and PP-OCR). A task holds, for the training pool an
 | Field | Content |
 |---|---|
 | `tab[s]['lines']`, `eval_tab[s]['lines']` | the submission line of every candidate (polygon and transcription) as written to the evaluator |
-| `tab[s]['xc']` | the eleven signals of the first classifier (`features/unified_features.py`, `UNIFIED_COLUMNS`) |
+| `tab[s]['xc']` | the candidate features of CS (`features/unified_features.py`, `UNIFIED_COLUMNS`) |
 | `eval_tab[s]['score']`, `['rec']` | detection score and recognition confidence (geometric mean of the symbol probabilities), used by the baselines |
 | `lab[s]` | label of every training candidate from the native evaluator of the benchmark (1 correct, 0 wrong, -1 do-not-care) |
 | `ids`, `eval_ids` | training and test image ids |
 
 ## Steps
 
-1. **Candidates and signals.** The spotter output is stored once (`spotters/`, `data/collect_extra_train.py`). The eleven signals are built by
+1. **Candidates and candidate features.** The spotter output is stored once (`spotters/`, `data/collect_extra_train.py`). The candidate features are built by
    `features.unified_features.build_unified`: detector logit; geometric mean, minimum, mean entropy and minimum margin of the symbol probabilities;
    log relative area, log height, log aspect ratio of the submitted polygon; log length, digit fraction, letter fraction of the transcript. The first five depend on the
    decoder of each spotter and are documented in the module docstring.
-2. **First classifier.** `HistGradientBoostingClassifier(max_iter=60, max_leaf_nodes=7, l2_regularization=5, min_samples_leaf=20, early_stopping=False, random_state=11)`
+2. **Candidate scoring (CS).** `HistGradientBoostingClassifier(max_iter=60, max_leaf_nodes=7, l2_regularization=5, min_samples_leaf=20, early_stopping=False, random_state=11)`
    (`studies/ablation_controls.py`, `hgb`).
 3. **Threshold c.** Five-fold cross-fit grouped by image (`second_stage/band_classifier.cross_fit`); the pooled F1 of the out-of-fold probabilities is computed for every
    threshold 0.00 ... 0.99 (`selection/operating_point.py`, `FINE`, `pooled_f1`); `c = round(F*/2, 2)`. `studies/learning_curve.run` shows the rule in a few lines.
@@ -26,7 +26,7 @@ full training pools, CTW1500 and PP-OCR). A task holds, for the training pool an
 5. **Re-reading.** Candidates in the band are cropped along their polygon to 32 x 128 pixels (`second_stage/crops.py`) and read by PARSeq-S\*
    (`second_stage/read_parseq_star.py`, checkpoint from `training/parseq_star/`). The six reading features (agreement, edit similarity, sequence confidence, minimum token
    probability, mean log-probability, length difference) are built by `second_stage/band_classifier.verifier_features`.
-6. **Second classifier.** Same learner, trained on the training candidates of the band with the eleven signals, `p` and the six reading features
+6. **Final decision (FD).** Same learner, trained on the training candidates of the band with the candidate features, `p` and the six reading features
    (`selection/nested_selection.band_fit`, `band_apply`).
 7. **Decision.** A candidate with `p >= k c` is kept; a candidate in the band is kept if `q >= c`. First-step-only variant: keep if `p >= c`.
 8. **Baselines.** *Released*: the threshold of the spotter's own configuration (`data/tasks.py`, `evaluation/common.author_keep`). *Re-tuned*: a detection-score threshold and a

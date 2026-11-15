@@ -3,13 +3,17 @@
 Code of the experiments in *Learning Uncertainty for Scene-Text Spotting: Candidate Scoring and Selective Re-reading*.
 
 The method sits on top of a trained scene-text spotter and decides which of its predicted words to keep, without retraining or modifying it.
-A gradient-boosted classifier scores every prediction from eleven detection, recognition, geometry and transcript signals. Uncertain predictions are re-read by an
-independent recogniser (PARSeq-S\*, PARSeq-S retrained without ArT), and a second classifier combines the two readings with the first-step evidence.
+A gradient-boosted classifier, CS (candidate scoring), scores every prediction from its candidate features (detection, recognition, geometry and transcript). Uncertain predictions are re-read by an
+independent recogniser (PARSeq-S\*, PARSeq-S retrained without ArT), and a second classifier, FD (final decision), combines the two readings with the evidence of the candidate scoring.
 The experiments use DeepSolo, TiCLS and PP-OCRv5 Mobile on Total-Text, ICDAR2015 and CTW1500 (nine spotter x benchmark rows).
 
-![Overview of the method: a frozen spotter proposes candidates, a first classifier accepts the confident ones, uncertain ones are re-read by PARSeq-S* and decided by a second classifier](docs/figures/overview.png)
+![Overview of the method: a frozen spotter proposes candidates, candidate scoring (CS) accepts the confident ones, uncertain ones are re-read by PARSeq-S* and decided by the final decision (FD)](docs/figures/overview.png)
 
-*Overview of the method. Both classifiers are fitted on the labelled training split only; the spotter is never modified.*
+*Overview of the method. Both classifiers, CS and FD, are fitted on the labelled training split only; the spotter is never modified.*
+
+![A failure of DeepSolo on Total-Text image 595 and the three steps of the method](docs/figures/example.png)
+
+*A failure of the spotter and the method on one segment. DeepSolo keeps the wrong word "malayua". Candidate scoring gives p = 0.56 below kc = 0.82, the segment is re-read by PARSeq-S\*, and the final decision gives q = 0.15 below c = 0.43, so the word is excluded.*
 
 ## Where to start
 
@@ -29,7 +33,7 @@ wordfilter/
   paths.py            every machine-specific location (environment variables, see below)
   setup_configs.py    writes configs/approximate/*.json for this machine from configs/templates/
   data/               candidate pools of the three spotters, their labels, one Task object per row
-  features/           the eleven signals (unified_features.py is the definition used in the paper)
+  features/           the candidate features (unified_features.py is the definition used in the paper)
   selection/          cut c (F/2 rule), verification band k (nested cross-fit), baseline thresholds, exact selection
   second_stage/       crops, second readers (PARSeq-S*, ABINet, ViTSTR-S), band classifier, baselines
   evaluation/         pinned official evaluators, per-image counts, detection-only metrics

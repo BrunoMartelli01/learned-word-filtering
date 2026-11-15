@@ -4,13 +4,13 @@ Docstrings carry short labels (`E18`, `P3`, ...) from the working log of the stu
 
 | Label | Content | Module |
 |---|---|---|
-| E6 | first classifier on cached DeepSolo outputs (candidate table, features) | `data/deepsolo_table.py` |
+| E6 | candidate scoring (CS) on cached DeepSolo outputs (candidate table, features) | `data/deepsolo_table.py` |
 | E7 | repeated source partitions, cohort helpers | `data/cohort.py` |
-| E10 | signal ablation and learning curve of the first classifier; the `Task` classes | `data/tasks.py` |
+| E10 | candidate-feature ablation and learning curve of CS; the `Task` classes | `data/tasks.py` |
 | E11 | CTW1500 with the official DeepSolo R50 checkpoint | `spotters/deepsolo_ctw1500.py` |
 | E13 | classifier family, calibration, voting | `studies/ablation_learners.py` |
 | E14 | negative controls, cut-rule ablation, hyper-parameters | `studies/ablation_controls.py` |
-| E15 | cross-expert agreement as a signal | `studies/ablation_agreement.py` |
+| E15 | cross-expert agreement as a feature | `studies/ablation_agreement.py` |
 | E17, E27 | TiCLS fine-tune on CTW1500, its evaluation and candidate bank | `spotters/ticls_ctw1500_*.py` |
 | E18, E20, E21 | calibration protocol on the test split; the same on CTW1500 and with PP-OCR as third spotter | `data/cv_counts.py`, `data/tasks_ctw1500.py`, `data/tasks_ppocr.py` |
 | E30 | the F/2 operating point | `selection/operating_point.py` |
