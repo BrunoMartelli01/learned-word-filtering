@@ -5,3 +5,4 @@ machine-readable form, and `gates.json` the checks that the cached exact evaluat
 Section titles keep the numbering of the working draft; `docs/PAPER_MAP.md` gives the table of the paper for each section.
 Each table has three blocks: the label-based selection (FAST), the exact selection (EXACT, the numbers of the paper) and their difference.
 All rows are approximate reproductions of single-spotter pipelines evaluated on the full official test splits.
+The columns Band (share of the test candidates read again) and Crops per image count every test candidate that falls in the band, including those on do-not-care regions, because the layer cannot tell them apart at test time. Earlier versions of these tables counted only labelled candidates and understated both columns; the F1 values were not affected.

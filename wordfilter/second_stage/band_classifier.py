@@ -116,9 +116,11 @@ def main(a):
     base_model = hgb(); base_model.fit(Xb[:, :12], Yb)   # same band rows without verifier features (control for re-fitting inside the band)
     keep_base, keep_ver, keep_ctrl = {}, {}, {}
     yb_list, pr_list, pb_list, pc_list, ag_list = [], [], [], [], []
+    n_band = 0   # every test candidate of the band, including those on do-not-care regions (the layer cannot tell them apart at test time)
     for s in T.eval_ids:
         p = p_te[s]
         inb = (p >= BAND[0]) & (p <= BAND[1])
+        n_band += int(inb.sum())
         xe = np.column_stack([T.eval_tab[s]['xc'], p, ve[s]]) if len(p) else np.zeros((0, 12 + nv))
         pb = band_model.predict_proba(xe)[:, 1] if inb.any() else np.zeros(len(p))
         pc = base_model.predict_proba(xe[:, :12])[:, 1] if inb.any() else np.zeros(len(p))
@@ -128,7 +130,7 @@ def main(a):
         sel = inb & (lab_te[s] >= 0)
         yb_list.append(lab_te[s][sel]); pr_list.append(p[sel]); pb_list.append(pb[sel]); pc_list.append(pc[sel]); ag_list.append(ve[s][sel, 0])
     yb = np.concatenate(yb_list)
-    res = dict(expert=a.expert, task=a.task, band_candidates_test=int(len(yb)), band_share=float(len(yb) / max(1, sum(len(p_te[s]) for s in T.eval_ids))), band_positive_rate=float(yb.mean()),
+    res = dict(expert=a.expert, task=a.task, band_candidates_test=n_band, band_share=float(n_band / max(1, sum(len(p_te[s]) for s in T.eval_ids))), band_candidates_test_labelled=int(len(yb)), band_positive_rate=float(yb.mean()),
                auc_ranker=auc(yb, np.concatenate(pr_list)), auc_band_control_no_verifier=auc(yb, np.concatenate(pc_list)), auc_band_with_verifier=auc(yb, np.concatenate(pb_list)), auc_verifier_agree_alone=auc(yb, np.concatenate(ag_list)),
                train_band_candidates=int(len(Yb)))
     res['auc_gain_vs_ranker'] = res['auc_band_with_verifier'] - res['auc_ranker']

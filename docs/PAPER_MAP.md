@@ -11,20 +11,20 @@ The nine rows are `{deepsolo, ticls, ppocr} x {totaltext, icdar2015, ctw1500}`.
 | Paper | Section of `tables.md` | What runs | Code |
 |---|---|---|---|
 | Tab. 6 candidate scoring: P, R, F1, output words, differences with 95% intervals | Table 4, Table 5 | main chain, stages `op`, `band`, `test` | `reruns/exact/main_chain.py`, `selection/operating_point.py`, `second_stage/band_classifier.py`, `reruns/fast/report_main.py` |
-| Tab. 7 second step (k, crops per image, F1, gains) | Table 6 | same run, stage `band` selects k | `selection/verification_band.py`, `selection/nested_selection.py` |
-| Fig. 6 band-width sensitivity; arg max of the training F1 (Sect. 4.6) | Table 15, Table 14 | same run, stages `sweep` and `targmax` | `reruns/exact/main_chain.py`, `figures/make_fig56.py` |
+| Tab. 7 second step (k, share of candidates read, crops per image, F1, gains) | Table 6 | same run, stage `band` selects k | `selection/verification_band.py`, `selection/nested_selection.py` |
+| Band-width sensitivity (drawn as Fig. 6 in earlier drafts, not in the paper) and arg max of the training F1 (Sect. 4.6) | Table 15, Table 14 | same run, stages `sweep` and `targmax` | `reruns/exact/main_chain.py`, `figures/make_fig56.py` |
 | Tab. 5 detection-only P/R/F1, F1 std over eleven 80% subsets | Table 3 | stability, 12 training sets per row | `reruns/exact/stability.py`, `evaluation/detection_only.py`, `reruns/fast/report_stability.py` |
 | Fig. 5 learning curve | Table 8 of rev 48 / Fig. 5 | learning curve, 11 draws per row | `studies/learning_curve.py`, `figures/make_fig56.py` |
 | Tab. 8 cross-dataset (own, leave-one-out, pooled) | Table 8 / 10 | cross-dataset chain | `studies/cross_dataset.py`, `reruns/exact/cross_dataset.py`, `scripts/cross_chain.sh` |
 | Tab. 9, variant candidate features (digit share, longest token) | not in `tables.md` | leave-one-out refits with replaced columns | `studies/loo_robust/` |
 | Tab. 10, candidate-feature ablation | Table 9 (user numbering) | ablations, stage `all` | `studies/ablations.py` |
-| Tab. 11 second readers (PARSeq-S\*, ABINet, ViTSTR-S, shuffled) | Table 10 (user numbering) | readers chain | `reruns/exact/readers_chain.py`, `second_stage/read_*.py`, `reruns/fast/report_readers.py` |
+| Tab. 11 second readers (PARSeq-S\*, ABINet, ViTSTR-S) | Table 10 (user numbering) | readers chain | `reruns/exact/readers_chain.py`, `second_stage/read_*.py`, `reruns/fast/report_readers.py` |
 | Reader accuracy on matched training candidates (Sect. 4.2 and 4.6) | Table 17 | reader accuracy | `second_stage/reader_accuracy.py` |
 | Released and re-tuned baselines (Sect. 4.1.3) | rows "thr_train" | two-threshold grid on the training pool | `data/tasks.py` (`pick_thresholds`), `second_stage/baselines.py` |
 | TiCLS fine-tune on CTW1500 (Sect. 4.2) | - | fine-tune, evaluation, candidate bank | `spotters/ticls_ctw1500_finetune.py`, `_eval.py`, `_bank.py` |
 | PARSeq-S\* (Sect. 3.4, 4.2) | - | retraining without ArT | `training/parseq_star/` |
 | Tab. 12 comparison with reported results | - | numbers copied from the cited papers | - |
-| Figs. 1, 3, 4, 7; timing of PARSeq-S (Sect. 4.2) | - | illustrations and a micro-benchmark | not included |
+| Figs. 1, 3, 4, 6; timing of PARSeq-S (Sect. 4.2) | - | illustrations and a micro-benchmark | not included |
 
 ## Commands
 
@@ -33,7 +33,7 @@ export WORDFILTER_RUNS=... WORDFILTER_ARTIFACTS=... WORDFILTER_DATASETS=... WORD
 python -m wordfilter.setup_configs
 RUN=$WORDFILTER_RUNS/rerun-exact
 
-# S = all chain: candidate scoring, band selection, final decision, band sweep, baselines (Tab. 6-7, Fig. 6)
+# S = all chain: candidate scoring, band selection, final decision, band sweep, baselines (Tab. 6-7)
 python -m wordfilter.reruns.exact.main_chain --arm exact --out $RUN --jobs 4 --threads 2
 python -m wordfilter.reruns.exact.readers_chain --arm exact --out $RUN --jobs 4        # Tab. 11
 

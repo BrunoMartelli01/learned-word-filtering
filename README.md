@@ -41,7 +41,7 @@ wordfilter/
   spotters/           inference adapters and candidate collection (DeepSolo, TiCLS, PP-OCR), TiCLS CTW1500 fine-tune
   reruns/fast/        final-table layer 1: unified features, label-based F1 for every selection
   reruns/exact/       final-table layer 2: every selection made with the exact pinned evaluator (the numbers of the paper)
-  figures/            redraws the data plots (Figs. 5 and 6) from the result tables
+  figures/            redraws the data plots (Fig. 5 and the band-sensitivity plot of Table 15) from the result tables
 configs/templates/    the three configurations, with placeholders for the local paths
 scripts/              shell glue for the long jobs (job runner, cross-dataset chain)
 training/parseq_star/ recipe used to retrain PARSeq-S without ArT
@@ -78,7 +78,7 @@ python -m wordfilter.reruns.exact.launch fast wordfilter.studies.learning_curve 
   computed from. Every table is computed from stored candidate predictions; nothing is re-inferred when a table is rebuilt.
 * The code is released as it was run. Selections of c, k and the baseline pair come in two protocols, label-based (`reruns/fast`) and exact (`reruns/exact`);
   the paper reports the exact one. The two layers patch the same unchanged analysis modules, so read `reruns/exact/launch.py` first.
-* Figures 1, 3, 4 and 7 of the paper are illustrations drawn from stored outputs; their drawing scripts are not part of this release.
+* Figures 1, 3, 4 and 6 of the paper are illustrations drawn from stored outputs; their drawing scripts are not part of this release.
 * The timing of Sect. 4.2 (PARSeq-S at 68 ms per crop) was measured with a separate micro-benchmark that is not included.
 
 ## Reproducibility notes
