@@ -1,6 +1,6 @@
-# Learning Which Words to Keep
+# Learning Uncertainty for Scene-Text Spotting
 
-Code of the experiments in *Learning Which Words to Keep: Confidence-Based Filtering and Selective Re-reading for Scene-Text Spotters*.
+Code of the experiments in *Learning Uncertainty for Scene-Text Spotting: Candidate Scoring and Selective Re-reading*.
 
 The method sits on top of a trained scene-text spotter and decides which of its predicted words to keep, without retraining or modifying it.
 A gradient-boosted classifier scores every prediction from eleven detection, recognition, geometry and transcript signals. Uncertain predictions are re-read by an
